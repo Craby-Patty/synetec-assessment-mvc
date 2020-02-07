@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace InterviewTestTemplatev2.Data
+namespace InterviewTestTemplatev2.Data 
 {
     using System;
     using System.Collections.Generic;

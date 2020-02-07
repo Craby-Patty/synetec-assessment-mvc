@@ -9,6 +9,5 @@ namespace InterviewTestTemplatev2.Models
     {
         public Data.HrEmployee hrEmployee;
         public int bonusPoolAllocation;
-
     }
 }

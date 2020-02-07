@@ -14,13 +14,10 @@ namespace InterviewTestTemplatev2.Controllers
 
         private MvcInterviewV3Entities1 db = new MvcInterviewV3Entities1();
 
-        // GET: BonusPool
         public ActionResult Index()
-        {
+        {            
             BonusPoolCalculatorModel model = new BonusPoolCalculatorModel();
-
-            model.AllEmployees = db.HrEmployees.ToList<HrEmployee>();
-            
+            model.AllEmployees = getEmployees();
             return View(model);
         }
 
@@ -28,29 +25,30 @@ namespace InterviewTestTemplatev2.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Calculate(BonusPoolCalculatorModel model)
         {
-
-            
-
             int selectedEmployeeId = model.SelectedEmployeeId;
             int totalBonusPool = model.BonusPoolAmount;
-
-            //load the details of the selected employee using the ID
             HrEmployee hrEmployee = (HrEmployee)db.HrEmployees.FirstOrDefault(item => item.ID == selectedEmployeeId);
-            
-            int employeeSalary = hrEmployee.Salary;
 
-            //get the total salary budget for the company
-            int totalSalary = (int)db.HrEmployees.Sum(item => item.Salary);
+            Payroll payroll = new Payroll();
+            payroll.AllEmployees = getEmployees();
+            payroll.TotalCostToCompany = payroll.PayrollCostTocompany(payroll.AllEmployees);
 
-            //calculate the bonus allocation for the employee
-            decimal bonusPercentage = (decimal)employeeSalary / (decimal)totalSalary;
-            int bonusAllocation = (int)(bonusPercentage * totalBonusPool);
+            BonusPool bonusPool = new BonusPool();
+            bonusPool.BonusPoolAmount = totalBonusPool;       
 
             BonusPoolCalculatorResultModel result = new BonusPoolCalculatorResultModel();
+            Allocation allocation = new Allocation();
             result.hrEmployee = hrEmployee;
-            result.bonusPoolAllocation = bonusAllocation;
-            
+            result.bonusPoolAllocation = allocation.BonusAllocationCalculation(hrEmployee, payroll, bonusPool);
             return View(result);
+        }  
+
+        public List<HrEmployee> getEmployees()
+        {
+            Payroll payroll = new Payroll();
+            payroll.AllEmployees = db.HrEmployees.ToList<HrEmployee>();
+            return payroll.AllEmployees;
         }
+
     }
 }
